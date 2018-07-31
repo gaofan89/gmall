@@ -2,8 +2,9 @@ package com.gaofan.gmall.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import java.io.Serializable;
 
-public class UserInfo {
+public class UserInfo implements Serializable {
 
     @Id
     private String id;
