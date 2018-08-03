@@ -41,4 +41,10 @@ public class IndexController {
     public String addAttr(){
         return "addAttr";
     }
+
+    @RequestMapping("addSpu")
+    public String addSpu(){
+
+        return "addSpu";
+    }
 }

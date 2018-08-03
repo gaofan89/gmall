@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
     <title>Title</title>
 </head>
 <body>
-    <table title="属性列表" class="easyui-datagrid" style="width:100%;height:100%"
+    <table id="dg" title="属性列表" class="easyui-datagrid" style="width:100%;height:100%"
            data-options="fitColumns:true,singleSelect:true,toolbar: '#tb'">
         <thead>
         <tr>
@@ -16,16 +16,118 @@
     </table>
 
     <div id="tb">
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">添加</a>
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">编辑</a>
-        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true">删除</a>
+        <a href="javascript:addAttrInfo();" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true">添加</a>
+        <a href="javascript:editAttrInfo();" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true">编辑</a>
+        <a href="javascript:removeAttrInfo();" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true">删除</a>
         <div>
-            一级分类：<input id="cc1" class="easyui-combobox" data-options="" />
-            二级分类：<input id="cc2" class="easyui-combobox" data-options="" />
-            三级分类：<input id="cc3" class="easyui-combobox" data-options="" />
+            一级分类：<input id="cc1" class="easyui-combobox" data-options="valueField: 'id',
+                        textField: 'name',
+                        url: 'getCatalog1',
+                        onSelect: function(rec){
+                            var url = 'getCatalog2?catalog1Id='+rec.id;
+                            $('#cc2').combobox('clear');
+                            $('#cc2').combobox('reload', url);
+                        }" />
+            二级分类：<input id="cc2" class="easyui-combobox" data-options="valueField: 'id',
+                        textField: 'name',
+                        onSelect: function(rec){
+                            var url = 'getCatalog3?catalog2Id='+rec.id;
+                            $('#cc3').combobox('clear');
+                            $('#cc3').combobox('reload', url);
+                        }" />
+            三级分类：<input id="cc3" class="easyui-combobox" data-options="valueField: 'id',textField: 'name'" />
+            <a href="javascript:searchAttrList();" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:120px">刷新属性列表</a>
         </div>
     </div>
 
+    <div th:include="editAttrInfo"></div>
+
+<script language="JavaScript">
+
+    function searchAttrList(){
+        var  catalog3Id = $("#cc3").combobox("getValue");
+        $("#dg").datagrid({url:"getAttrInfo?catalog3Id=" +catalog3Id});
+    }
+
+    function addAttrInfo(){
+        var  catalog3Id = $("#cc3").combobox("getValue");
+        if(catalog3Id){
+            $("#dlg").dialog("open");
+            //初始化datagrid
+            initDatagird();
+        }else{
+            $.messager.alert("提示","请选择三级分类再操作","warning")
+        }
+
+    }
+    function initDatagird(info){
+        //alert("111")
+        datagrid = $('#dg_av').datagrid({
+            columns:[[
+                {field:'id',title:'编号',width:100},
+                {field:'valueName',title:'属性值名称',width:300,
+                    editor: {
+                        type: 'validatebox', options: { required: true}  //必填项
+                    }
+                }
+            ]],
+            toolbar: [{
+                iconCls: 'icon-add',
+                text:"添加",
+                handler: function(){
+                    datagrid.datagrid('appendRow',{id:'',valueName:''});
+                }
+            },'-',{
+                iconCls: 'icon-remove',
+                text:"删除",
+                handler: function(){
+                    var select = datagrid.datagrid('getSelected');
+                    if(select){
+                        var rowIndex = datagrid.datagrid("getRowIndex",select)
+                        datagrid.datagrid('deleteRow',rowIndex);
+                    }
+                }
+            }],
+            onDblClickRow: function (rowIndex, rowData) {
+                //双击开启编辑行
+                datagrid.datagrid("beginEdit", rowIndex);
+                //设定当失去焦点时,退出编辑状态
+                var valueName = rowData.valueName;
+                $("input.datagrid-editable-input").val(valueName).bind("blur",function(evt){
+                    datagrid.datagrid('endEdit',rowIndex);
+                });
+            }
+
+        });
+        if(info){
+            $("#dg_av").datagrid("reload","getAttrValue?infoId=" +info.id);
+            $("#attrName").textbox("setText",info.attrName);
+        }
+    }
+
+    function editAttrInfo() {
+        var info = $("#dg").datagrid("getSelected");
+        if(info){
+            var infoId = info.id;
+            $("#dlg").dialog("open");
+            initDatagird(info);
+        }else{
+            $.messager.alert("提示","请选择需要编辑的数据","warning")
+        }
+    }
+
+    function removeAttrInfo(){
+        var info = $("#dg").datagrid("getSelected");
+        if(info){
+            var infoId = info.id;
+            $.post("deleteAttrInfo",{infoId:infoId},function(){
+                $("#dg").datagrid("reload");
+            })
+        }else{
+            $.messager.alert("提示","请选择需要删除的数据","warning")
+        }
+    }
+</script>
 
 </body>
 </html>
