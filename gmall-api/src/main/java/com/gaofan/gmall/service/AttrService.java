@@ -13,4 +13,6 @@ public interface AttrService {
     void deleteAttrInfo(String infoId);
 
     List<BaseAttrValue> selectAttrValue(String infoId);
+
+    List<BaseAttrInfo> getAttrListByCtg3Id(String catalog3Id);
 }

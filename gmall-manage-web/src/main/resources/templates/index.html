@@ -5,8 +5,12 @@
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="/easyui/themes/default/easyui.css">
     <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/webuploader/webuploader.css">
     <script type="text/javascript" src="/easyui/jquery.min.js"></script>
     <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript" src="/easyui/datagrid-detailview.js"></script>
+    <script type="text/javascript" src="/webuploader/webuploader.js"></script>
 </head>
 <body class="easyui-layout">
 
@@ -15,10 +19,10 @@
     </div>
     <div data-options="region:'west',split:true,title:'West'" style="width:150px;padding:10px;">
         <div class="easyui-accordion" style="width:500px;height:300px;">
-            <div title="属性信息管理" data-options="iconCls:'icon-ok'" style="overflow:auto;padding:10px;">
+            <div title="属性信息管理" data-options="iconCls:'icon-ok',selected:false" style="overflow:auto;padding:10px;">
                 <a href="javascript:addAttr();">属性信息管理</a>
             </div>
-            <div title="商品SPU管理" data-options="iconCls:'icon-edit'" style="overflow:auto;padding:10px;">
+            <div title="商品SPU管理" data-options="iconCls:'icon-edit',selected:true" style="overflow:auto;padding:10px;">
                 <a href="javascript:addSpu();">商品SPU管理</a>
                 <!--<ul>
                     <li>
@@ -26,7 +30,7 @@
                     </li>
                 </ul>-->
             </div>
-            <div title="其他管理" data-options="iconCls:'icon-search'" style="padding:10px;">
+            <div title="其他管理" data-options="iconCls:'icon-search',selected:false" style="padding:10px;">
                 <ul>
                     <li>
                         其他管理项

@@ -26,6 +26,8 @@
                         onSelect: function(rec){
                             var url = 'getCatalog2?catalog1Id='+rec.id;
                             $('#cc2').combobox('clear');
+                            $('#cc3').combobox('clear');
+                            $('#dg').datagrid('loadData',{total:0,rows:[]});
                             $('#cc2').combobox('reload', url);
                         }" />
             二级分类：<input id="cc2" class="easyui-combobox" data-options="valueField: 'id',
@@ -33,14 +35,18 @@
                         onSelect: function(rec){
                             var url = 'getCatalog3?catalog2Id='+rec.id;
                             $('#cc3').combobox('clear');
+                            $('#dg').datagrid('loadData',{total:0,rows:[]});
                             $('#cc3').combobox('reload', url);
                         }" />
-            三级分类：<input id="cc3" class="easyui-combobox" data-options="valueField: 'id',textField: 'name'" />
+            三级分类：<input id="cc3" class="easyui-combobox" data-options="valueField: 'id',textField: 'name',
+                    onSelect: function(rec){
+                        $('#dg').datagrid({url:'getAttrInfo?catalog3Id=' +rec.id});
+                    }" />
             <a href="javascript:searchAttrList();" class="easyui-linkbutton" data-options="iconCls:'icon-search'" style="width:120px">刷新属性列表</a>
         </div>
     </div>
 
-    <div th:include="editAttrInfo"></div>
+    <!--<div th:include="editAttrInfo"></div>-->
 
 <script language="JavaScript">
 
@@ -61,8 +67,8 @@
 
     }
     function initDatagird(info){
-        //alert("111")
         datagrid = $('#dg_av').datagrid({
+            url:"",
             columns:[[
                 {field:'id',title:'编号',width:100},
                 {field:'valueName',title:'属性值名称',width:300,
@@ -99,6 +105,7 @@
             }
 
         });
+        $("#attrName").textbox("setText","");
         if(info){
             $("#dg_av").datagrid("reload","getAttrValue?infoId=" +info.id);
             $("#attrName").textbox("setText",info.attrName);

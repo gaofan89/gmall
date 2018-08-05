@@ -15,6 +15,13 @@ public class AttrController {
     @Reference
     private AttrService attrService;
 
+    @RequestMapping("getAttrListByCtg3Id")
+    public List<BaseAttrInfo> getAttrListByCtg3Id(String catalog3Id){
+        List<BaseAttrInfo> baseAttrInfos = attrService.getAttrListByCtg3Id(catalog3Id);
+
+        return baseAttrInfos;
+    }
+
     @RequestMapping("getAttrInfo")
     public List<BaseAttrInfo> getAttrInfo(String catalog3Id){
         List<BaseAttrInfo> baseAttrInfos = attrService.selectAttrInfo(catalog3Id);

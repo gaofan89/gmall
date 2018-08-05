@@ -43,6 +43,7 @@
             三级分类：
             <select name="ctg3ForSpuList" id="ctg3ForSpuList"  class="easyui-combobox" data-options="valueField:'id',textField:'name',
             onSelect:function(rec){
+                    //alert(JSON.stringify(rec));
                    $('#spulist_dg').datagrid({url:'getSpuInfo?catalog3Id='+rec.id});
                }"    style="width:100px" ></select>
             <a href="#" class="easyui-linkbutton" iconCls="icon-search"  onclick="javascript:reloadSpuList()"  >刷新列表</a>
@@ -50,7 +51,11 @@
     </div>
 </div>
 
-    <div th:include="spuInfoPage"></div>
+<div th:include="spuInfoPage"></div>
+
+<div th:include="skuListPage"></div>
+
+<div th:include="skuInfoPage"></div>
 
 <script language="JavaScript">
     function reloadSpuList(){
@@ -69,6 +74,20 @@
             $.messager.alert("提示","请选择三级分类再操作","warning");
         }
 
+    }
+    function showSkuInfoList() {
+        var spu = $("#spulist_dg").datagrid("getSelected");
+        if(spu){
+            console.log(JSON.stringify(spu));
+            $("#skulist_dlg").dialog("open");
+            initskudata(spu);
+        }else{
+            $.messager.alert("提示","请选择一个spu再操作","warning")
+        }
+    }
+    function addSkuInfo() {
+        $("#sku_dlg").dialog("open");
+        initskupageInfo();
     }
 </script>
 </body>

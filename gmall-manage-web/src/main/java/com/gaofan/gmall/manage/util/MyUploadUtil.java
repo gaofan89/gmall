@@ -1,30 +1,18 @@
-package com.gaofan.gmall.manage;
+package com.gaofan.gmall.manage.util;
 
-import com.gaofan.gmall.manage.util.MyUploadUtil;
 import org.csource.common.MyException;
 import org.csource.fastdfs.ClientGlobal;
 import org.csource.fastdfs.StorageClient;
 import org.csource.fastdfs.TrackerClient;
 import org.csource.fastdfs.TrackerServer;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import sun.applet.Main;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class GmallManageWebApplicationTests {
-
-    @Test
-    public void contextLoads() {
-    }
-
-    public static void main(String[] args) {
+public class MyUploadUtil {
+    public static String uploadForFDFS(MultipartFile file){
         String imgUrl = "http://192.168.91.135";
-        String trackerFile = GmallManageWebApplicationTests.class.getClassLoader().getResource("tracker.conf").getFile();
+        String trackerFile = MyUploadUtil.class.getClassLoader().getResource("tracker.conf").getFile();
         try {
             ClientGlobal.init(trackerFile);
         } catch (IOException e) {
@@ -41,11 +29,13 @@ public class GmallManageWebApplicationTests {
         }
         StorageClient storageClient = new StorageClient(trackerServer,null);
 
+        String originalFilename = file.getOriginalFilename();
+        String ext = originalFilename.substring(originalFilename.lastIndexOf(".") +1);
+
         try {
-            String[] imgs = storageClient.upload_appender_file("D:/123.jpg", "jpg", null);
+            String[] imgs = storageClient.upload_appender_file(file.getBytes(), ext, null);
             for (String img : imgs) {
                 System.out.println(img);
-                System.out.println("--------------------------------");
                 imgUrl += "/" + img;
             }
 
@@ -54,7 +44,8 @@ public class GmallManageWebApplicationTests {
         } catch (MyException e) {
             e.printStackTrace();
         }
-
-        System.out.println(imgUrl);
+        System.out.println("imgUrlimgUrl============" + imgUrl);
+        return imgUrl;
     }
+
 }

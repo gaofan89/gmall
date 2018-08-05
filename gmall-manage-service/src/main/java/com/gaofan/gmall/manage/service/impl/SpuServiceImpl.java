@@ -1,9 +1,11 @@
 package com.gaofan.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.gaofan.gmall.bean.SpuImage;
 import com.gaofan.gmall.bean.SpuInfo;
 import com.gaofan.gmall.bean.SpuSaleAttr;
 import com.gaofan.gmall.bean.SpuSaleAttrValue;
+import com.gaofan.gmall.manage.mapper.SpuImageMapper;
 import com.gaofan.gmall.manage.mapper.SpuInfoMapper;
 import com.gaofan.gmall.manage.mapper.SpuSaleAttrMapper;
 import com.gaofan.gmall.manage.mapper.SpuSaleAttrValueMapper;
@@ -23,6 +25,9 @@ public class SpuServiceImpl implements SpuService {
     private SpuSaleAttrMapper spuSaleAttrMapper;
 
     @Autowired
+    private SpuImageMapper spuImageMapper;
+
+    @Autowired
     private SpuSaleAttrValueMapper spuSaleAttrValueMapper;
 
     @Override
@@ -36,18 +41,29 @@ public class SpuServiceImpl implements SpuService {
     @Override
     public void saveSpu(SpuInfo spuInfo) {
 
+        //保存spu
         spuInfoMapper.insertSelective(spuInfo);
+
         List<SpuSaleAttr> attrList = spuInfo.getSpuSaleAttrList();
         for (SpuSaleAttr attr : attrList) {
             attr.setSpuId(spuInfo.getId());
 
+            //保存商品销售属性值
             List<SpuSaleAttrValue> valueList = attr.getSpuSaleAttrValueList();
             for (SpuSaleAttrValue value : valueList) {
                 value.setSpuId(spuInfo.getId());
                 spuSaleAttrValueMapper.insert(value);
             }
 
+            //保存商品销售属性
             spuSaleAttrMapper.insert(attr);
+        }
+
+        //保存商品图片
+        List<SpuImage> spuImageList = spuInfo.getSpuImageList();
+        for (SpuImage spuImage : spuImageList) {
+            spuImage.setSpuId(spuInfo.getId());
+            spuImageMapper.insert(spuImage);
         }
 
 
