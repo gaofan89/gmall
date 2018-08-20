@@ -2,7 +2,9 @@ package com.gaofan.gmall.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.gaofan.gmall.bean.BaseSaleAttr;
+import com.gaofan.gmall.bean.SpuImage;
 import com.gaofan.gmall.bean.SpuInfo;
+import com.gaofan.gmall.bean.SpuSaleAttr;
 import com.gaofan.gmall.manage.util.MyUploadUtil;
 import com.gaofan.gmall.service.BaseSaleAttrService;
 import com.gaofan.gmall.service.SpuService;
@@ -44,6 +46,20 @@ public class SpuInfoController {
     @RequestMapping("baseSaleAttrList")
     public List<BaseSaleAttr> baseSaleAttrList(){
         List<BaseSaleAttr> list = baseSaleAttrService.getBaseSaleAttr();
+
+        return list;
+    }
+
+    @RequestMapping("getSaleAttrListByPid")
+    public List<SpuSaleAttr> getSaleAttrListByPid(String spuId){
+        List<SpuSaleAttr> list = baseSaleAttrService.getSaleAttrListByPid(spuId);
+
+        return list;
+    }
+
+    @RequestMapping("getImageListByPid")
+    public List<SpuImage> getImageListByPid(String spuId){
+        List<SpuImage> list = spuService.getImageListByPid(spuId);
 
         return list;
     }

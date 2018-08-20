@@ -15,4 +15,6 @@ public interface AttrService {
     List<BaseAttrValue> selectAttrValue(String infoId);
 
     List<BaseAttrInfo> getAttrListByCtg3Id(String catalog3Id);
+
+    List<BaseAttrInfo> getAttrInfoByVIds(String valueIdStr);
 }

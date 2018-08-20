@@ -1,10 +1,8 @@
 package com.gaofan.gmall.manage.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.gaofan.gmall.bean.SpuImage;
-import com.gaofan.gmall.bean.SpuInfo;
-import com.gaofan.gmall.bean.SpuSaleAttr;
-import com.gaofan.gmall.bean.SpuSaleAttrValue;
+import com.alibaba.fastjson.JSON;
+import com.gaofan.gmall.bean.*;
 import com.gaofan.gmall.manage.mapper.SpuImageMapper;
 import com.gaofan.gmall.manage.mapper.SpuInfoMapper;
 import com.gaofan.gmall.manage.mapper.SpuSaleAttrMapper;
@@ -13,7 +11,9 @@ import com.gaofan.gmall.service.SpuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.transaction.AfterTransaction;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SpuServiceImpl implements SpuService {
@@ -67,5 +67,34 @@ public class SpuServiceImpl implements SpuService {
         }
 
 
+    }
+
+    @Override
+    public List<SpuImage> getImageListByPid(String spuId) {
+        SpuImage spuImage = new SpuImage();
+        spuImage.setSpuId(spuId);
+        List<SpuImage> spuImages = spuImageMapper.select(spuImage);
+
+        return spuImages;
+    }
+
+    @Override
+    public List<SpuSaleAttr> getSpuSaleAttrCheckedList(Map<String,String> param) {
+        return spuSaleAttrMapper.getSpuSaleAttrCheckedList(param);
+    }
+
+    @Override
+    public String getAllSkuAttrByPid(String spuId) {
+
+        List<SkuSaleAttrValue> skuSaleAttrValues = spuSaleAttrMapper.selectAllSkuAttrByPid(spuId);
+
+        Map<String,String> map = new HashMap<>();
+        for (SkuSaleAttrValue skuSaleAttrValue : skuSaleAttrValues) {
+            map.put(skuSaleAttrValue.getSaleAttrValueId(),skuSaleAttrValue.getSkuId());
+        }
+
+        String json = JSON.toJSONString(map);
+
+        return json;
     }
 }

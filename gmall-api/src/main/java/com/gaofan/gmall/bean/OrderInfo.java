@@ -61,6 +61,8 @@ public class OrderInfo implements Serializable {
     @Column
     private String trackingNo;
 
+    private Date expectDeliveryTime;
+
 
     @Transient
     private List<OrderDetail> orderDetailList;
@@ -232,5 +234,13 @@ public class OrderInfo implements Serializable {
 
     public void setOutTradeNo(String outTradeNo) {
         this.outTradeNo = outTradeNo;
+    }
+
+    public Date getExpectDeliveryTime() {
+        return expectDeliveryTime;
+    }
+
+    public void setExpectDeliveryTime(Date expectDeliveryTime) {
+        this.expectDeliveryTime = expectDeliveryTime;
     }
 }

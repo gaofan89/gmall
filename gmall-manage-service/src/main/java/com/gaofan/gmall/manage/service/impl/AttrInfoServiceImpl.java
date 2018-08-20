@@ -69,11 +69,16 @@ public class AttrInfoServiceImpl implements AttrService {
 
         for (BaseAttrInfo attrInfo : attrInfos) {
             BaseAttrValue value = new BaseAttrValue();
-            value.setAttrId(baseAttrInfo.getId());
+            value.setAttrId(attrInfo.getId());
             List<BaseAttrValue> values = attrValueMapper.select(value);
 
             attrInfo.setAttrValueList(values);
         }
-        return null;
+        return attrInfos;
+    }
+
+    @Override
+    public List<BaseAttrInfo> getAttrInfoByVIds(String valueIdStr) {
+        return attrInfoMapper.selectAttrInfoByVIds(valueIdStr);
     }
 }

@@ -27,74 +27,151 @@
 
         <input id="catalog3IdForSku" name="catalog3Id" type="hidden"/>
         <br/><br/>
-
         <input id="skuInfo" name="skuInfo" type="hidden"/>
 
-
-        <div id="attrInfoGroup"  title="平台属性" class="easyui-panel" style="padding:5px;" >
-            <span attrId="">
-                <select>
-                    <option value="valueId">属性值</option>
-                </select>
-            </span>
-
-        </div>
+        <div id="attrInfoGroup"  title="平台属性" class="easyui-panel" style="padding:5px;" ></div>
 
         <div id="spuSaleAttrGroup" title="销售属性" class="easyui-panel" style="padding:5px;" ></div>
 
-
-
         <!----------------商品图片列表 ----------------------->
-
         <table id="skuImgDg" class="easyui-datagrid" title="商品图片列表"
                data-options="singleSelect:false,selectOnCheck:false,method:'get'" ></table>
-
         <br/><br/>
-
     </form>
 </div>
 <!----------------弹出框的按钮组----------------------->
 <div id="skuBtns">
-    <a href="#" class="easyui-linkbutton" onclick="saveSku()">保 存</a>
+    <a href="#" class="easyui-linkbutton" onclick="saveskuinfo()">保 存</a>
     <a href="#" class="easyui-linkbutton" onclick="closeSku()">关 闭</a>
 </div>
 
 <script language="JavaScript">
-    function initskupageInfo() {
+
+    function saveskuinfo() {
+        var jsonstr = {};
+
+        var skuName = $("#skuName").textbox("getValue");
+        var price = $("#price").numberbox("getValue");
+        var weight = $("#weight").numberbox("getValue");
+        var skuDesc = $("#skuDesc").textbox("getValue");
+
+        jsonstr["price"] =  price;
+        jsonstr["skuName"] =  skuName;
+        jsonstr["weight"] =  weight;
+        jsonstr["skuDesc"] =  skuDesc;
+
+        var catalog3Id = $("#catalog3IdForSku").val();
+        var spuId = $("#spuIdForSku").val();
+        jsonstr["catalog3Id"] =  catalog3Id;
+        jsonstr["spuId"] =  spuId;
+
+        //平台属性值
+        var attrinfo = $("#attrInfoGroup span");
+        $(attrinfo).each(function(i,attr){
+            jsonstr["skuAttrValueList["+i+"].attrId"] = $(this).attr("attrId");
+            jsonstr["skuAttrValueList["+i+"].valueId"] = $(this).children("select").val();
+        });
+        //销售属性值
+        var saleAttrs = $("#spuSaleAttrGroup span");
+        $(saleAttrs).each(function(i,saleAttr){
+            jsonstr["skuSaleAttrValueList["+i+"].saleAttrId"] = $(this).attr("attrId");
+            jsonstr["skuSaleAttrValueList["+i+"].saleAttrValueId"] =$(this).find("select").val();
+            jsonstr["skuSaleAttrValueList["+i+"].saleAttrName"] = $(this).attr("attrName");
+            jsonstr["skuSaleAttrValueList["+i+"].saleAttrValueName"] = $(this).find("select option:selected").text();
+        })
+        //图片
+        var imgs = $("#skuImgDg").datagrid("getChecked");
+        //var defaultImgUrl = "";
+        var defaultId = $("input[name='isD']:checked").val();
+        $(imgs).each(function(i,img){
+            console.log(JSON.stringify(img));
+            jsonstr["skuImageList["+i+"].imgName"] = img.imgName;
+            jsonstr["skuImageList["+i+"].imgUrl"] = img.imgUrl;
+            jsonstr["skuImageList["+i+"].spuImgId"] = img.id;
+            if(defaultId == img.id){
+                jsonstr["skuImageList["+i+"].isDefault"] = "1";
+                jsonstr["skuDefaultImg"] =  img.imgUrl;
+            }
+        })
+        console.log(jsonstr);
+
+        $.post("saveSku",jsonstr,function(data){
+            reloadSpuList();//刷新页面
+            $("#sku_dlg").dialog("close");
+        });
+    }
+
+
+    function initskupageInfo(spuInfo) {
         //
         var  catalog3Id = $("#ctg3ForSpuList").combobox("getValue");
+        $("#catalog3IdForSku").val(catalog3Id);
+        $("#spuIdForSku").val(spuInfo.id);
         $.post("getAttrListByCtg3Id",{catalog3Id:catalog3Id},function(data){
             var htmlstr = "";
             $(data).each(function(i,attr){
                 htmlstr += "<span attrId='"+attr.id+"'>"+attr.attrName+"：&nbsp;";
                 htmlstr += "<select>";
                 var values = attr.attrValueList;
-                console.log(JSON.stringify(values));
+                //console.log(JSON.stringify(values));
                 $(values).each(function (j,value) {
                     htmlstr += "<option value='"+value.id+"'>"+value.valueName+"</option>";
                 });
 
                 htmlstr += "</select></span>&nbsp;&nbsp;";
             });
-            alert(htmlstr);
             $("#attrInfoGroup").html(htmlstr);
         })
+
+        initSaleAttrInfo(spuInfo.id);
+        initImageInfo(spuInfo.id);
     }
-    
-    function saveskuinfo() {
-        var attrinfo = $("#attrInfoGroup span");
-        var jsonstr = {};
 
-        $(attrinfo).each(function(i,attr){
-            jsonstr["skuAttrValueList["+i+"].attrId"] = $(this).attr("attrId");
-            jsonstr["skuAttrValueList["+i+"].valueId"] = $(this).children("select").val();
-        });
+    function initSaleAttrInfo(spuId){
 
-        $.post("saveSku",jsonstr,function(data){
+        $.post("getSaleAttrListByPid",{spuId:spuId},function(data){
+            var imgstr = "";
+            $(data).each(function(i,attr){
+                imgstr += "<span attrId='"+attr.saleAttrId+"' attrName='"+attr.saleAttrName+"'>"+attr.saleAttrName+"：&nbsp;";
+                imgstr += "<select>";
 
-            $("#sku_dlg").dialog("close");
-        });
+                var values = attr.spuSaleAttrValueList;
+                //console.log(JSON.stringify(values));
+                $(values).each(function (j,value) {
+                    imgstr += "<option value='"+value.id+"'>"+value.saleAttrValueName+"</option>";
+                });
+
+                imgstr += "</select></span>&nbsp;&nbsp;";
+            });
+            $("#spuSaleAttrGroup").html(imgstr);
+
+        })
+
     }
+
+    function initImageInfo(spuId) {
+
+        $("#skuImgDg").datagrid({
+            url:"getImageListByPid?spuId="+spuId,
+            columns:[[
+                {field:'',title:'编号',width:100,checkbox:true},
+                {field:'id',title:'编号',width:100},
+                {field:'imgName',title:'图片名称',width:100},
+                {field:'imgUrl',title:'图片地址',width:300/*,
+                    formatter: function(value,row,index){
+                        return "<img src='"+row.imgUrl+"' width='100px' />";
+                    }*/
+                },
+                {field:'isDefault',title:'是否是默认图片',width:100,
+                    formatter: function(value,row,index){
+                        return "<input type = 'radio' name = 'isD' value='"+row.id+"'  />";
+                    }
+                }
+            ]]
+        })
+    }
+
+
 </script>
 
 </body>

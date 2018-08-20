@@ -86,8 +86,9 @@
         }
     }
     function addSkuInfo() {
+        var spu = $("#spulist_dg").datagrid("getSelected");
         $("#sku_dlg").dialog("open");
-        initskupageInfo();
+        initskupageInfo(spu);
     }
 </script>
 </body>

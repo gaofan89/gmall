@@ -17,7 +17,7 @@ public class SkuInfoController {
 
     @RequestMapping("/saveSku")
     public String saveSku(SkuInfo skuInfo){
-
+        skuInfoService.saveSku(skuInfo);
         return "success";
     }
 

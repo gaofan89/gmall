@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+</head>
+<body>
+    <!-- 赋值 -->
+    <div th:text="${hello}">this is a thymeleaf</div>
+    <!-- 判断 -->
+    <div th:if="${hello == 'hello'}">hello</div>
+    <div th:if="${hello != 'hello'}">helloWorld</div>
+
+    <div th:text="${ hello =='hello'? 'yes':'no'}">helloWorld</div>
+
+    <!-- 循环 -->
+    <div th:each="spu: ${spuInfo}" th:text="${spu.spuName}"></div>
+
+    <div th:each="spu:${spuInfo}">
+        姓名：<span th:text="${spu.spuName}"></span>
+        Id：<span th:text="${spu.id}"></span>
+    </div>
+
+
+   <a th:href="'javascript:look(\''+${hello}+'\');'">点我看美女</a>
+
+<script language="JavaScript">
+    function look(hello) {
+        alert(hello + "美女");
+    }
+
+</script>
+</body>
+</html>
