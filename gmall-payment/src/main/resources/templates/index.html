@@ -64,18 +64,33 @@
 
     <form    method="post" id="paymentForm">
 
-         <input type="hidden" name="orderId" th:value="${orderId}" >
+         <input type="hidden" id="orderId"name="orderId" th:value="${orderId}" >
     </form>
+    <div id="punchout_div">
+      <!--<form name="punchout_form" id="punchout_form" method="post" action="https://openapi.alipay.com/gateway.do?charset=utf-8&method=alipay.trade.page.pay&sign=F81kniuMPjxNx5KHeZE34rRgZOpSfHxhZKTrKIE1H7aYwNBUda8wP%2Bp3JigECcPIB3RlWTFE7B0lbZcEGJMXHBk%2Fxq7fGQ9uqYAySrJE6UkW7MnEAyBRRHwfOT3y2%2FJ2Q%2F8ZrEBPnHOB5AxPZ7gm%2FQmRuUxpP6oS%2BQeEouQFbGpCEQxwEUZ%2FqG1H7R7zGPD0GiphmBdqdWb8ed3hU6GJPFJwTPFhru2YvLV2q4HAByFP%2F66dNY4TRVZ4Lxg%2BHwWwEoRwi5jDE2n%2BCCpIXQ7tPclZSg%2B45xJwFE9PKeGVZdm3XRYrye%2FwB8ntokc9w7u0X%2F4MZ13NUxWvGUxj3mFNXA%3D%3D&return_url=http%3A%2F%2Fpayment.gmall.com%3A8088%2Falipay%2Fcallback%2Freturn&notify_url=http%3A%2F%2Fpayment.gmall.com%3A8088%2Falipay%2Fcallback%2Fnotify&version=1.0&app_id=2018020102122556&sign_type=RSA2&timestamp=2018-08-23+11%3A39%3A52&alipay_sdk=alipay-sdk-java-dynamicVersionNo&format=json">
+        <input type="hidden" name="biz_content" value="{&quot;out_trade_no&quot;:&quot;GAOFAN201808231139491534995589921&quot;,&quot;total_amount&quot;:&quot;0.001&quot;,&quot;subject&quot;:&quot;测试硅谷手机phone&quot;,&quot;product_code&quot;:&quot;FAST_INSTANT_TRADE_PAY&quot;}">
+        <input type="submit" value="立即支付" style="display:none" >
+      </form>-->
 
+    </div>
 
 	</body>
   <script type="text/javascript">
+      $.post("/alipay/submit",{orderId:$("#orderId").val()},function(data){
+          //console.log(data);
+          //alert(data);
+          $("#punchout_div").html(data);
+          //alert($("#punchout_div").html());
+      })
+
       $(function() {
           $("#paymentButton").click(function () {
-              $("#paymentForm").attr("action","/"+$("input[type='radio']:checked").val()+"/submit")  ;
-              $("#paymentForm").submit();
-              console.log($("#paymentForm").html()) ;
-              console.log($("#paymentForm").attr("action")) ;
+              //$("#paymentForm").attr("action","/"+$("input[type='radio']:checked").val()+"/submit")  ;
+              //$("#paymentForm").submit();
+              $("#punchout_div").find("form").submit();
+
+              //console.log($("#paymentForm").html()) ;
+              //console.log($("#paymentForm").attr("action")) ;
           })
 
 

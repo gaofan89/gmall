@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,6 +30,56 @@ public class GmallListServiceApplicationTests {
 
     @Reference
     private SkuInfoService skuInfoService;
+
+    public void test(int count){
+
+        System.out.println("test :========== "+count);
+    }
+
+    @Test
+    public void testAdd(){
+
+        int count = 5;
+        test(--count);
+
+        System.out.println("testAdd :========== "+count);
+    }
+
+    @Test
+    public void testBinary(){
+
+        int[] attr = new int[10000]; // 1 —— 10000
+        for (int i = 0; i < 10000; i++) {
+            attr[i] = i+1;
+        }
+
+        int[] pos = {0,10000};
+        int sut = getIndex(attr,300,500,pos);
+        System.out.println(sut);
+
+    }
+
+    public int getIndex(int[] attr, int num ,int length,int[] pos){//二分法查找
+        int hign = pos[0];
+        int low = pos[1];
+
+        //int length = attr.length /2 ;  // 10000 750 250
+
+        if(num == attr[length]){
+            return length;
+        }else if(num > attr[length]){
+            pos[1] = length;
+           int len =  (hign + length ) / 2 ;
+
+
+           return getIndex(attr, num ,len,pos);
+        }else{
+            pos[0] = length;
+            int len =  (length + low ) / 2 ;
+           return  getIndex(attr, num ,len,pos);
+        }
+
+    }
 
     @Test
     public void search(){
@@ -63,8 +114,9 @@ public class GmallListServiceApplicationTests {
     @Test
     public void contextLoads() {
 
-        List<SkuInfo> skuInfos = skuInfoService.getSkuInfoByCtg3Id("61");
-
+        List<SkuInfo> skuInfos = skuInfoService.getSkuInfoByCtg3Id("61");//new ArrayList<>(); //
+        //SkuInfo sku = skuInfoService.getSkuInfoFormDb("94");
+        //skuInfos.add(sku);
         List<SkuLsInfo> skuLsInfos = new ArrayList<>();
         for (SkuInfo skuInfo : skuInfos) {
 

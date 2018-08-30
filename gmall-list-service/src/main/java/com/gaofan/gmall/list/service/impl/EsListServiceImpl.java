@@ -10,11 +10,13 @@ import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.error.uri.ShouldHaveQuery;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -76,18 +78,32 @@ public class EsListServiceImpl implements EsListService {
         }
 
         if(StringUtils.isNotBlank(skuLsParam.getKeyword())){
-
+            BoolQueryBuilder b2 = new BoolQueryBuilder();
             MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("skuName",skuLsParam.getKeyword());
-            boolQueryBuilder.must(matchQueryBuilder);
+            b2.must(matchQueryBuilder);
 
+            BoolQueryBuilder b3 = new BoolQueryBuilder();
             MatchQueryBuilder matchQueryBuilder1 = new MatchQueryBuilder("skuDesc",skuLsParam.getKeyword());
-            boolQueryBuilder.must(matchQueryBuilder1);
+            b3.must(matchQueryBuilder1);
+
+            boolQueryBuilder.should(b2).should(b3);
+            boolQueryBuilder.minimumShouldMatch("1");
+
+//            MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("skuName",skuLsParam.getKeyword());
+//            boolQueryBuilder.must(matchQueryBuilder);
+//
+//            MatchQueryBuilder matchQueryBuilder1 = new MatchQueryBuilder("skuDesc",skuLsParam.getKeyword());
+//            boolQueryBuilder.must(matchQueryBuilder1);
         }
 
         dsl.query(boolQueryBuilder);
         dsl.size(skuLsParam.getPageSize());
         dsl.from((skuLsParam.getPageNo() -1) * skuLsParam.getPageSize());
-
+        HighlightBuilder highlightBuilder = new HighlightBuilder();
+        highlightBuilder.field("skuName");
+        highlightBuilder.preTags("<span style='color:red;font-weight:bolder;'>");
+        highlightBuilder.postTags("</span>");
+        dsl.highlight(highlightBuilder);
         System.out.println(dsl.toString());
 
         return dsl.toString();

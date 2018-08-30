@@ -23,7 +23,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         HandlerMethod method = (HandlerMethod) handler;
 
         LoginRequire methodAnnotation = method.getMethodAnnotation(LoginRequire.class);
-        //不需要登录(无注解)，直接放行
+        //不需要登录(无注解)，直接放行a
         if(methodAnnotation == null){
             return true;
         }
@@ -41,7 +41,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             String verify = HttpClientUtil.doGet("http://passport.gmall.com:8086/verify?userToken=" + token + "&salt="+salt);
             if(verify.equals("success")){
                 //更新cookie的token
-                CookieUtil.setCookie(request,response,"userToken",token,60*60*2,true);
+                CookieUtil.setCookie(request,response,"userToken",token,60*60*24*7,true);
 
                 //将用户信息放入请求域中
                 Map user = JwtUtil.decode(CommonUtil.USER_TOKEN_KEY, token, salt);

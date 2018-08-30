@@ -37,7 +37,6 @@ public class SkuInfoServiceImpl implements SkuInfoService {
     public List<SkuInfo> getSkuListByPid(String spuId) {
         SkuInfo skuInfo = new SkuInfo();
         skuInfo.setSpuId(spuId);
-
         return skuInfoMapper.select(skuInfo);
     }
 
@@ -87,9 +86,10 @@ public class SkuInfoServiceImpl implements SkuInfoService {
 
             //访问数据库之前，加锁
             String lockk = "sku:"+skuId+":lock";
-            String lockv = jedis.set(lockk, "1", "nx", "ps", 3000);
+            String lockv = jedis.set(lockk, "1", "nx", "px", 3000);
+            //String OK = jedis.set("sku:" + skuId + ":lock", "1", "nx", "px", 5000);
 
-            if(StringUtils.isNotBlank(lockv)){ //获得锁
+            if("OK".equals(lockv)){ //获得锁
 
                 skuInfo = getSkuInfoFormDb(skuId);
                 if(skuInfo != null){
@@ -127,17 +127,18 @@ public class SkuInfoServiceImpl implements SkuInfoService {
         return skuInfo;
     }
 
-    private SkuInfo getSkuInfoFormDb(String skuId){
+    public SkuInfo getSkuInfoFormDb(String skuId){
         //获取 skunInfo的信息
         SkuInfo skuInfo = skuInfoMapper.selectByPrimaryKey(skuId);
+        if(skuInfo !=null){
 
-        //获取图片信息
-        SkuImage skuImage = new SkuImage();
-        skuImage.setSkuId(skuId);
-        List<SkuImage> skuImages = skuImageMapper.select(skuImage);
+            //获取图片信息
+            SkuImage skuImage = new SkuImage();
+            skuImage.setSkuId(skuId);
+            List<SkuImage> skuImages = skuImageMapper.select(skuImage);
 
-        skuInfo.setSkuImageList(skuImages);
-
+            skuInfo.setSkuImageList(skuImages);
+        }
 
         return skuInfo;
     }

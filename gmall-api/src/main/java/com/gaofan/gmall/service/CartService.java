@@ -20,4 +20,6 @@ public interface CartService {
     List<CartInfo> getCartCacheByChecked(String userId);
 
     void deleteCartById(List<CartInfo> cartInfos);
+
+    void combineCartInfo(List<CartInfo> carts, String id);
 }

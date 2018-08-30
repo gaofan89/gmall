@@ -11,11 +11,11 @@
 
     <dependencies>
 
-        <dependency>
+        <!--<dependency>
             <groupId>com.gaofan.gmall</groupId>
             <artifactId>gmall-common-util</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
 
         <!-- 通用mapper -->
         <dependency>

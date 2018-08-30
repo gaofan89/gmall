@@ -15,4 +15,6 @@ public interface SkuInfoService {
     List<SkuInfo> getSkuInfoByCtg3Id(String catalog3Id);
 
     boolean checkPrice(CartInfo cartInfo);
+
+    SkuInfo getSkuInfoFormDb(String skuId);
 }

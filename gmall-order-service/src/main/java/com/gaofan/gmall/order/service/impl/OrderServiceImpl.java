@@ -1,6 +1,7 @@
 package com.gaofan.gmall.order.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.gaofan.gmall.bean.OrderDetail;
 import com.gaofan.gmall.bean.OrderInfo;
 import com.gaofan.gmall.order.mapper.OrderDetailMapper;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.print.attribute.standard.OrientationRequested;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,8 +48,16 @@ public class OrderServiceImpl implements OrderService {
     public void sendDeliveryMq(String outTradeNo) {
         ActiveMQTextMessage textMessage = new ActiveMQTextMessage();
         try {
-            textMessage.setText(outTradeNo);
+            OrderInfo orderInfo = getByOutTradeNo(outTradeNo);
+
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderId(orderInfo.getId());
+            List<OrderDetail> orderDetails = orderDetailMapper.select(orderDetail);
+            orderInfo.setOrderDetailList(orderDetails);
+
+            textMessage.setText(JSON.toJSONString(orderInfo));
             activeMQUtil.sendMq(CommonUtil.DELIVERY_MQ, textMessage);
+            System.out.println("发送订单的消息，给库存");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -100,7 +110,22 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderInfo getById(String orderId) {
 
-        return orderInfoMapper.selectByPrimaryKey(orderId);
+        OrderInfo orderInfo = orderInfoMapper.selectByPrimaryKey(orderId);
 
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setOrderId(orderInfo.getId());
+        List<OrderDetail> orderDetails = orderDetailMapper.select(orderDetail);
+
+        orderInfo.setOrderDetailList(orderDetails);
+
+        return orderInfo;
+    }
+
+    @Override
+    public OrderInfo getByOutTradeNo(String out_trade_no) {
+        Example example = new Example(OrderInfo.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("outTradeNo",out_trade_no);
+        return orderInfoMapper.selectOneByExample(example);
     }
 }

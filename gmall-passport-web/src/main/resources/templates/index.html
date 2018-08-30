@@ -43,11 +43,11 @@
 						<li class="top_1">
 							<img src="/img/user_03.png" class="err_img1"/>
 
-							<input type="text" name="loginName" placeholder=" 邮箱/用户名/已验证手机"  class="user"/>
+							<input type="text" name="loginName" id="loginName" placeholder=" 邮箱/用户名/已验证手机"  class="user"/>
 						</li>
 						<li>
 							<img src="/img/user_06.png" class="err_img2"/>
-							<input type="password" name="passwd" placeholder=" 密码" class="password"/>
+							<input type="password" name="passwd" id="passwd" placeholder=" 密码" class="password"/>
 
 						</li>
 						<li class="bri">
@@ -77,8 +77,9 @@
 	<script language="JavaScript">
 
 			function submitLogin() {
-
-			    $.post("/login",{},function(token){
+				var loginName = $("#loginName").val();
+				var passwd = $("#passwd").val();
+			    $.post("/login",{loginName:loginName,passwd:passwd},function(token){
 
 					if(token != "fail"){
 					    window.location.href = $("#originUrl").val() + "?userToken=" + token;

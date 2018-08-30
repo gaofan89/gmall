@@ -145,5 +145,20 @@
 
         </dependencies>
     </dependencyManagement>
-    
+    <modules>
+        <module>../gmall-manage-service</module>
+        <module>../gmall-manage-web</module>
+        <module>../gmall-user</module>
+        <module>../gmall-list-service</module>
+        <module>../gmall-list-web</module>
+        <module>../gmall-item-web</module>
+        <module>../gmall-passport-web</module>
+        <module>../gmall-cart-service</module>
+        <module>../gmall-cart-web</module>
+        <module>../gmall-order-service</module>
+        <module>../gmall-order-web</module>
+        <module>../gmall-payment</module>
+
+        <module>../gware-manage</module>
+    </modules>
 </project>

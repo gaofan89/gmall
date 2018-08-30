@@ -14,4 +14,6 @@ public interface OrderService {
     String saveOrder(OrderInfo orderInfo);
 
     OrderInfo getById(String orderId);
+
+    OrderInfo getByOutTradeNo(String out_trade_no);
 }

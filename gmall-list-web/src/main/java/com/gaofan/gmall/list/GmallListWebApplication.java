@@ -2,8 +2,10 @@ package com.gaofan.gmall.list;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "com.gaofan.gmall")
 public class GmallListWebApplication {
 
     public static void main(String[] args) {

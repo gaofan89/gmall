@@ -1,6 +1,7 @@
 package com.gaofan.gmall.order.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.gaofan.gmall.annotation.LoginRequire;
 import com.gaofan.gmall.bean.CartInfo;
 import com.gaofan.gmall.bean.OrderDetail;
@@ -12,6 +13,8 @@ import com.gaofan.gmall.service.OrderService;
 import com.gaofan.gmall.service.SkuInfoService;
 import com.gaofan.gmall.service.UserService;
 import com.gaofan.gmall.util.CommonUtil;
+import com.gaofan.gmall.util.CookieUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.number.OrderingComparison;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,8 +43,9 @@ public class OrderController {
 
 
     @RequestMapping("submitOrder")
+    @LoginRequire(requiredLogin = true)
     public String submitOrder(HttpServletRequest request,String tradeCode,ModelMap map){
-        String userId = "2"; //(String)request.getAttribute("userId");
+        String userId = (String)request.getAttribute("userId");
         boolean isCanSub = orderService.checkTradeCode(tradeCode,userId);
         if(!isCanSub){
             map.put("errMsg","获取订单失败");
@@ -104,12 +108,12 @@ public class OrderController {
     @LoginRequire(requiredLogin = true)
     @RequestMapping("toTrade")
     public String toTrade(HttpServletRequest request, HttpServletResponse response, ModelMap map){
-        String userId = "2";// (String) request.getAttribute("userId");
-
-        List<CartInfo> cartInfos = cartService.getCartCacheByChecked(userId);
+        String userId = (String) request.getAttribute("userId");
+        //如果用已经登录了，就取缓存中的数据
+        //如果用户未登录，就合并购物车
+        List<CartInfo> cartInfos = cartInfos = cartService.getCartCacheByChecked(userId);
         List<OrderDetail> orderDetailLists = new ArrayList<>();
         if(cartInfos !=null && cartInfos.size() >0 ){
-
             for (CartInfo cartInfo : cartInfos) {
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setImgUrl(cartInfo.getImgUrl());

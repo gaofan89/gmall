@@ -2,6 +2,7 @@ package com.gaofan.gmall.cart.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.gaofan.gmall.bean.CacheCollection;
 import com.gaofan.gmall.bean.CartInfo;
 import com.gaofan.gmall.cart.mapper.CartInfoMapper;
 import com.gaofan.gmall.service.CartService;
@@ -9,6 +10,7 @@ import com.gaofan.gmall.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -119,5 +121,47 @@ public class CartServiceImpl implements CartService {
         }
 
         syncCache(userId);
+    }
+
+    @Override
+    public void combineCartInfo(List<CartInfo> carts, String id) {
+          if(carts !=null && carts.size() >0){
+              for (CartInfo cart : carts) {
+                  CartInfo info = getCartInfoBySkuId(cart);
+                  if(info ==  null){
+                      cart.setUserId(id);
+                      addCartInfo(cart);
+                  }else{
+                      info.setSkuNum(info.getSkuNum() + cart.getSkuNum());
+                      info.setCartPrice(info.getSkuPrice().multiply(new BigDecimal(info.getSkuNum())));
+                      updateCartInfo(info);
+                  }
+              }
+              syncCache(id);
+          }
+
+
+//        List<CartInfo> cacheList = getCartListCache(id);
+//        cacheList.addAll(carts);
+//        Jedis jedis = redisUtil.getJedis();
+//        if(cacheList !=null && cacheList.size() >0){
+//            Map<String, String> redisMap = new HashMap<>();
+//            for (CartInfo info : cacheList) {
+//                redisMap.put(info.getSkuId(), JSON.toJSONString(info));
+//            }
+//            jedis.hmset("carts:"+id+":info",redisMap);
+//        }
+
+    }
+
+    public void updateForRedis(String id){
+        CacheCollection.UnSuccessList.add(id);
+        CacheCollection.updateList.add(id);
+
+        //调用update方法更新数据
+
+        //从UnSuccessList中删除更新成功的id
+        CacheCollection.updateList.add(id);
+
     }
 }

@@ -63,6 +63,7 @@ public class AlipayConfig {
 
     @Bean
     public AlipayClient alipayClient(){
+        AlipayClient alipayClient2 = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", app_id, app_private_key, format, charset, alipay_public_key, sign_type); //获得初始化的AlipayClient
         AlipayClient alipayClient=new DefaultAlipayClient(alipay_url,app_id,app_private_key,format,charset, alipay_public_key,sign_type );
 
         return alipayClient;

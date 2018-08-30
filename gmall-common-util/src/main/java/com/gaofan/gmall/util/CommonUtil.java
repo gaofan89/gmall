@@ -13,8 +13,9 @@ public class CommonUtil {
 
 
     public static final String PAYMENT_SUCCESS_MQ = "PAYMENT_SUCCESS_MQ";
+    public static final String PAYMENT_CHECK_MQ = "PAYMENT_CHECK_MQ";
 
-    public static final String DELIVERY_MQ = "PAYMENT_SUCCESS_MQ";
+    public static final String DELIVERY_MQ = "ORDER_RESULT_QUEUE";
 
 
     public static String getIp(HttpServletRequest request){
